@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>title</title></head>
+<body>
+<div>
+    <a href="/?reload=true">Reload</a>
+    <div>
+        <a href="/?order=views&asc=true">Views Asc</a> | <a href="/?order=views&asc=false">Views Desc</a>
+    </div>
+    <div>
+        <a href="/?order=seeds&asc=true">Seeds Asc</a> | <a href="/?order=seeds&asc=false">Seeds Desc</a>
+    </div>
+    <div>
+        <a href="/?order=leeches&asc=true">Leeches Asc</a> | <a href="/?order=leeches&asc=false">Leeches Desc</a>
+    </div>
+</div>
+<br/>
+<br/>
+<table border='1'>
+    <tr>
+        <th>Name</th>
+        <th>Uploader</th>
+        <th>Size</th>
+        <th>Views</th>
+        <th>Seeds</th>
+        <th>Leeches</th>
+        <th>Date</th>
+    </tr>
+    <tr th:each="item: ${items}">
+        <td><strong th:text="${item.name}"/></td>
+        <td th:text="${item.uploader}" />
+        <td th:text="${item.size}" />
+        <td th:text="${item.views}" />
+        <td th:text="${item.seeds}" />
+        <td th:text="${item.leeches}" />
+        <td th:text="${item.date}" />
+    </tr>
+</table>
+</body>
