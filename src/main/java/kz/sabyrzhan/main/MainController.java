@@ -13,6 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 public class MainController {
@@ -77,6 +79,15 @@ public class MainController {
             for (var item : items) {
                 var itemData = new Item();
                 itemData.name = item.child(3).text();
+                String text = item.child(3).toString();
+                Pattern pattern = Pattern.compile("href=\"(.*?)\"");
+                Matcher matcher = pattern.matcher(text);
+                if (matcher.find()) {
+                    var href = matcher.group();
+                    var link = href.substring(href.indexOf("\"") + 1, href.lastIndexOf("\""));
+                    itemData.link = link;
+                }
+
                 itemData.uploader = item.child(6).text();
                 itemData.size = item.child(7).text();
                 itemData.views = Integer.parseInt(item.child(9).text());

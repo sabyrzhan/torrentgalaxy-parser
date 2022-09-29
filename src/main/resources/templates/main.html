@@ -30,7 +30,7 @@
         <th>Date</th>
     </tr>
     <tr th:each="item: ${items}">
-        <td><strong th:text="${item.name}"/></td>
+        <td><a th:href="${'https://torrentgalaxy.to' + item.link}"><strong th:text="${item.name}"/></a></td>
         <td th:text="${item.uploader}" />
         <td th:text="${item.size}" />
         <td th:text="${item.views}" />
