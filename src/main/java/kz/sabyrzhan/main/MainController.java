@@ -12,6 +12,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,6 +46,12 @@ public class MainController {
                 Collections.sort(itemsContainer, (o1, o2) -> o1.leeches - o2.leeches);
             } else {
                 Collections.sort(itemsContainer, (o1, o2) -> o2.leeches - o1.leeches);
+            }
+        } else if ("az".equals(order)) {
+            if (asc) {
+                Collections.sort(itemsContainer, Comparator.comparing(o -> o.name));
+            } else {
+                Collections.sort(itemsContainer, (o1, o2) -> o2.name.compareTo(o1.name));
             }
         }
 
