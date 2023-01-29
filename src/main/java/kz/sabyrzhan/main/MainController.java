@@ -10,17 +10,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.*;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Controller
 public class MainController {
-    private static final String savePath = "/Users/sabyrzhan/projects/torrentgalaxy-parser/saved.obj";
-
     @GetMapping("/")
     public String index(@RequestParam(required = false, defaultValue = "false") boolean reload, @RequestParam(required = false, defaultValue = "") String order, @RequestParam(required = false) boolean asc, Model model) throws Exception {
         if (reload) {
@@ -60,20 +55,48 @@ public class MainController {
         return "main";
     }
 
+    private static String getSavePath() {
+        var savePath = System.getProperty("save_path").trim();
+        if (savePath.isBlank()) {
+            throw new RuntimeException("Save path not specified");
+        }
+
+        return savePath;
+    }
+
     private static List<Item> readData() throws Exception {
-        ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(new File(savePath)));
+        var savePath = getSavePath();
+        ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(savePath));
         List<Item> items = (List<Item>) inputStream.readObject();
         return items;
     }
 
+    private static List<String> readUrls() {
+        var result = new ArrayList<String>();
+        String path = System.getProperty("url_list_file").trim();
+        if (path.isBlank()) {
+            throw new RuntimeException("URL list path not specified");
+        }
+
+        try (var fis = new FileInputStream(path);
+             var scanner = new Scanner(fis)) {
+            while(scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.isBlank() || line.startsWith("#")) {
+                    continue;
+                }
+                result.add(line);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
     private static void saveData() throws Exception {
-        var urls = new ArrayList<String>();
-        urls.add("https://torrentgalaxy.to/torrents.php?c33=1&page=0");
-        urls.add("https://torrentgalaxy.to/torrents.php?c33=1&page=1");
-        urls.add("https://torrentgalaxy.to/torrents.php?c33=1&page=2");
-        urls.add("https://torrentgalaxy.to/torrents.php?c33=1&page=3");
-        urls.add("https://torrentgalaxy.to/torrents.php?c33=1&page=4");
-        urls.add("https://torrentgalaxy.to/torrents.php?c33=1&page=5");
+        var savePath = getSavePath();
+        var urls = readUrls();
 
         var itemsContainer = new ArrayList<Item>();
 
@@ -97,7 +120,7 @@ public class MainController {
 
                 itemData.uploader = item.child(6).text();
                 itemData.size = item.child(7).text();
-                itemData.views = Integer.parseInt(item.child(9).text());
+                itemData.views = Integer.parseInt(item.child(9).text().replace(",", ""));
                 var seedLeech = item.child(10).text().replace("[", "").replace("]", "").split("/");
                 itemData.seeds = Integer.parseInt(seedLeech[0]);
                 itemData.leeches = Integer.parseInt(seedLeech[1]);
@@ -109,7 +132,7 @@ public class MainController {
             System.out.println("Finished: " + url);
         }
 
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(new File(savePath)));
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(savePath));
 
         objectOutputStream.writeObject(itemsContainer);
     }

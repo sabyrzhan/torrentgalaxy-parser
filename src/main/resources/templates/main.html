@@ -22,8 +22,8 @@
                     shouldSwitch = false;
                     /* Get the two elements you want to compare,
                     one from current row and one from the next: */
-                    x = rows[i].getElementsByTagName("TD")[0];
-                    y = rows[i + 1].getElementsByTagName("TD")[0];
+                    x = rows[i].getElementsByTagName("TD")[1];
+                    y = rows[i + 1].getElementsByTagName("TD")[1];
                     // Check if the two rows should switch place:
                     if (x.innerText.toLowerCase() > y.innerText.toLowerCase()) {
                         // If so, mark as a switch and break the loop:
@@ -53,7 +53,7 @@
 
             // Loop through all table rows, and hide those who don't match the search query
             for (i = 0; i < tr.length; i++) {
-                td = tr[i].getElementsByTagName("td")[0];
+                td = tr[i].getElementsByTagName("td")[1];
                 if (td) {
                     txtValue = td.textContent || td.innerText;
                     if (txtValue.toUpperCase().indexOf(filter) > -1) {
@@ -126,6 +126,7 @@
 <input type="text" id="myInput" placeholder="Search..." />
 <table border='1' id="myTable">
     <tr class="header">
+        <th>Search</th>
         <th>Name</th>
         <th>Uploader</th>
         <th>Size</th>
@@ -135,6 +136,9 @@
         <th>Date</th>
     </tr>
     <tr th:each="item: ${items}">
+        <td>
+            <a th:href="${'https://www.udemy.com/courses/search/?src=ukw&q=' + item.name}">Search in UDEMY</a>
+        </td>
         <td><a th:href="${'https://torrentgalaxy.to' + item.link}"><strong th:text="${item.name}"/></a></td>
         <td th:text="${item.uploader}" />
         <td th:text="${item.size}" />
